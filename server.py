@@ -1,17 +1,18 @@
+""" Module providing flask for emotion detection. """
 from flask import Flask, render_template, request
 from EmotionDetection.emotion_detection import emotion_detector
 
 #Initiate the flask app
 app = Flask("Emotion Detection")
 
-@app.route("/emotionDetector")
-def emotionDetector():
-
+@app.route("/emo_detector")
+def emo_detector():
+    """
+    Detect the dominant emotion from the provided text.
+    """
     text_to_analyse = request.args.get('textToAnalyze')
-    
+
     dominant_emotion, emotion_result = emotion_detector(text_to_analyse)
-    
-    print("dominant_emotion: ", dominant_emotion, "emotion_result: ", emotion_result)
 
     anger_score = emotion_result['anger']
     disgust_score = emotion_result['disgust']
@@ -21,12 +22,18 @@ def emotionDetector():
     anger_score = emotion_result['disgust']
 
     if dominant_emotion is None:
-        return "Invalid input! Try again!!"
-    else:
-        return "For the given statement, the system response is 'anger': {}, 'disgust': {}, 'fear': {}, 'joy': {} and 'sadness': {}. The dominant emotion is {}.".format(anger_score, disgust_score, fear_score, joy_score, sadness_score, response)
+        return "Invalid text! Please try again!"
+    return (
+        f"For the given statement, the system response is 'anger': {anger_score}, "
+        f"'disgust': {disgust_score}, 'fear': {fear_score}, 'joy': {joy_score}, "
+        f"and 'sadness': {sadness_score}. The dominant emotion is {dominant_emotion}."
+    )
 
 @app.route("/")
 def render_index_page():
+    """
+    Render the index page for the emotion detection app.
+    """
     return render_template('index.html')
 
 if __name__ == "__main__":
